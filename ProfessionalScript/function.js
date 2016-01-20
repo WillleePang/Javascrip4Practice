@@ -10,7 +10,8 @@ var trueFactorial = factorial;
 trueFactorial(5);
 
 //apply() call() bind()
-window.color = "red";
+window.color = "red";.
+
 var o = {color:"blue"};
 function sayColor(){
 	alert(this.color);
