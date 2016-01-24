@@ -14,3 +14,4 @@ function htmlEscape(text) {
 }
 
 var parseHtml = htmlEscape("<p class=\"greeting\">Hello world!</p>");
+
