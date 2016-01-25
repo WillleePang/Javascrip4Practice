@@ -51,4 +51,44 @@ function isArray(myArray) {
 }
 console.log(isArray([]));
 
+function createPerson(name, age, job){
+	var o = new Object();
+	o.name = name;
+	o.age = age;
+	o.job = job;
+	o.sayName = function(){
+		alert(this.name);
+	};
+	return o;
+}
+
+function Person(name, age, jbo){
+	this.name = name;
+	this.age= age;
+	this.job = job;
+	this.sayName = function(){
+		alert(this.name);
+	}
+}
+
+
+
+function Person(name, age, job){
+	this.name = name;
+	this.age = age;
+	this.job = job;
+	this.sayName = sayName;
+}
+
+function sayName(){
+	alert(this.name);
+}
+
+var person1 = createPerson("Nicholas", 29, "Software Engineer");
+var person2 = createPerson("Grey", 29, "Doctor");
+var person3 = new Person("willlee", 30, "Engineer");
+var person4 = new Person("hehe", 30, "youmin");
+
+
+
 
