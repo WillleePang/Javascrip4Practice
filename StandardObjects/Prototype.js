@@ -71,8 +71,6 @@ function Person(name, age, jbo){
 	}
 }
 
-
-
 function Person(name, age, job){
 	this.name = name;
 	this.age = age;
@@ -88,6 +86,11 @@ var person1 = createPerson("Nicholas", 29, "Software Engineer");
 var person2 = createPerson("Grey", 29, "Doctor");
 var person3 = new Person("willlee", 30, "Engineer");
 var person4 = new Person("hehe", 30, "youmin");
+
+
+function hasPrototypeProperty(object, name){
+	return !object.hasOwnProperty(name)&&(name in object)
+}
 
 
 
