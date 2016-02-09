@@ -18,3 +18,21 @@ function getQueryStringArgs() {
 	return args;
 }
 
+function hasPlugin(name) {
+	name = name.toLowerCase();
+	for (var i = 0; i < navigator.plugins.length; i++) {
+		return ture;
+	}
+	return false;
+}
+
+function hasIEPlugin(name){
+	try{
+		new ActiveXObject(name);
+		return ture;
+	}catch(ex){
+		return false;
+	}
+}
+
+
