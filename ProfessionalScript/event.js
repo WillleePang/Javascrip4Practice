@@ -151,6 +151,43 @@ var EventUtil1 = {
             event.cancelBubble = true;
         }
     },
+    getRelatedTarget: function (event) {
+        if (event.relatedTarget) {
+            return event.relatedTarget;
+        } else if (event.toElement) {
+            return event.toElement;
+        } else if (event.fromElement) {
+            return event.fromElement;
+        } else {
+            return null;
+        }
+    },
+    getButton: function (event) {
+        if (document.implementation.hasFeature("MouseEvents", "2.0")) {
+            return event.button;
+        } else {
+            switch (event.button) {
+                case 0:
+                case 1:
+                case 3:
+                case 5:
+                case 7:
+                    return 0;
+                case 2:
+                case 6:
+                    return 2;
+                case 4:
+                    return 1;
+            }
+        }
+    },
+    getWheelDelta: function (event) {
+        if (event.wheelDelta) {
+            return (client.engine.opera && client.engine.opera < 9.5 ? -event.wheelDelta : event.wheelDelta);
+        } else {
+            return -event.detail * 40;
+        }
+    }
 }
 link.onclick = function (event) {
     event = EventUtil1.getEvent(event);
@@ -158,3 +195,136 @@ link.onclick = function (event) {
     EventUtil1.stopPropagation(event);
 }
 
+//UI事件
+var isSupported = document.implementation.hasFeature("HTMLEvents", "2.0");
+var isSupported = document.implementation.hasFeature("UIEvent", "3.0");
+//load onload 页面完全加载后，出发load事件
+EventUtil.addHandler(window, "load", function (event) {
+    //<img src="smile.gif" onload="alert('Image loaded.')"
+    var image = document.getElementById("myImage");
+    EventUtil.addHandler(image, "load", function (event) {
+        event = EventUtil.getEvent(event);
+        alert(EventUtil.getTarget(event).src);
+    });
+    //新图像元素不一定要从添加到文档后才开始下载，只要设置src属性就会开始下载
+    document.body.appendChild(image);
+    image.src = "simle.gif";
+    //script元素的src属性并将该元素添加到文档后，才会开始下载
+    var script = document.createElement("script");
+    EventUtil.addHandler(script, "load", function (event) {
+        alert("Loaded");
+    });
+    //下面两条语句的顺序不重要
+    script.src = "example.js";
+    document.body.appendChild(script);
+
+    var link = document.createElement("link");
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    EventUtil.addHandler(link, "load", function (event) {
+        alert("css Loaded");
+    });
+    //下面两条语句的顺序不重要
+    link.href = "example.css";
+    document.getElementsByTagName("head")[0].appendChild(link);
+});
+//unload 文档完全卸载后出发
+EventUtil.addHandler(window, "unload", function (event) {
+    alert("Unloaded");
+});
+//resize浏览器窗口调整到一个新的高度或者宽度
+EventUtil.addHandler(window, "resize", function (event) {
+    alert("resized");
+});
+//scroll 页面滚动事件 注:尽量保持事件处理程序的代码简单
+EventUtil.addHandler(window, "scroll", function (event) {
+    if (document.compatMode == "CSS1Compat") {
+        alert(document.documentElement.srcollTop);
+    } else {
+        alert(document.body.scrollTop);
+    }
+});
+
+//焦点事件
+//focusout、fousin、blur、DOMFocusOut、focus、DOMFocusIn
+var isSupported = document.implementation.hasFeature("FocusEvent", "3.0");
+
+//鼠标与滚轮事件
+var isSupported = document.implementation.hasFeature("MouseEvents", "2.0");
+var isSupported = document.implementation.hasFeature("MouseEvents", "3.0");
+var div = document.getElementById("myDiv");
+EventUtil.addHandler(div, "click", function (event) {
+    event = EventUtil.getEvent(event);
+    alert("Client coordinates:" + event.clientX + "," + event.clientY);
+    var pageX = event.pageX, pageY = event.pageY;
+    if (pageX === undefined) {
+        pageX = event.clientX + (document.body.scrollLeft || document.documentElement.scrollLeft);
+    }
+    if (pageY === undefined) {
+        pageY = event.clientY + (document.body.scrollTop || document.documentElement.scrollTop);
+    }
+    alert("Page coordinates:" + event.pageX + "," + event.pageY);
+    alert("Screen coordinates:" + event.screenX + "," + event.screenY);
+});
+//修改键
+EventUtil.addHandler(div, "click", function (event) {
+    event = EventUtil.getEvent(event);
+    var keys = new Array();
+    if (event.shiftKey) {
+        keys.push("shift");
+    }
+    if (event.ctrlKey) {
+        keys.push("ctrl");
+    }
+    if (event.altKey) {
+        keys.push("alt");
+    }
+    if (event.metaKey) {
+        keys.push("meta");
+    }
+    alert("Keys: " + keys.join(","));
+});
+//相关元素
+EventUtil.addHandler(div, "mouseout", function (event) {
+    event = EventUtil.getEvent(event);
+    var target = EventUtil.getTarget(event);
+    var relatedTarget = EventUtil.getRelatedTarget(event);
+    alert("Moused out of " + target.tagName + " to " + relatedTarget.tagName);
+});
+//鼠标按钮
+EventUtil1.addHandler(div, "mousedown", function (event) {
+    event = EventUtil1.getEvent(event);
+    alert(EventUtil1.getBUtton(event));
+})
+//鼠标滚轮事件
+EventUtil1.addHandler(document, "mousewheel", function (event) {
+    event = EventUtil1.getEvent(event);
+    //支持opera 9.5之前的版本
+    var delta = (client.engine.opera && client.engine.opera < 9.5 ? -event.wheelDelta : event.wheelDelta);
+    alert(delta);
+});
+(function () {
+    function handleMouseWheel(event) {
+        event = EventUtil1.getEvent(event);
+        var delta = EventUtil1.getWheelDelta(event);
+        alert(delta);
+    }
+    EventUtil1.addHandler(document, "mousewheel", handleMouseWheel);
+    EventUtil1.addHandler(document, "DOMMouseScroll", handleMouseWheel);
+})();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
