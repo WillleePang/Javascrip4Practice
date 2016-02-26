@@ -483,6 +483,139 @@ EventUtil1.addHandler(window, "load", function () {
     link.href = "example.css";
     document.getElementsByTagName("head")[0].appendChild(link);
 });
+//“往返缓存” back-forward cache
+//pageshow和pagehide事件
+//pageshow在页面显示是出发，无论页面是否来自bfcache
+(function () {
+    var showCount = 0;
+    EventUtil1.addHandler(windwo, "load", function () {
+        alert("Load fired");
+    });
+    EventUtil1.addHandler(window, "pageshow", function () {
+        showCount++;
+        alert("Show has been fired " + showCount + " times. Persisted?" + event.persisted);
+    });
+    EventUtil1.addHandler(window, "pagehide", function (event) {
+        alert("Hiding, Persisted? " + event.persisted);
+    });
+})();
+//hashchange事件
+var isSupported = ("onhashchange" in window) && (document.documentMode === undefined || document.documentMode > 7);
+EventUtil1.addHandler(window, "hashchange", function (event) {
+    alert("Old URL: " + event.oldURL + "\nNew URL: " + event.newURL);
+});
+EventUtil1.addHandler(window, "hashchange", function (event) {
+    alert("Current hash: " + location.hash);
+});
+//触摸设备
+//orientationchange事件 去顶用户何时将设备由查看模式切换为纵向查看模式
+EventUtil1.addHandler(window, "load", function (event) {
+    var div = document.getElementById("myDiv");
+    div.innerHTML = "Current orientation is " + window.orientation;
+    EventUtil1.addHandler(window, "orientationchange", function (event) {
+        div.innerHTML = 'Current orientation is ' + window.orientation;
+    });
+});
+//MozOrientation事件
+//当设备的加速机检测设备的方向改变是，就会触发这个事件
+EventUtil1.addHandler(window, "MozOrientation", function (event) {
+    var output = document.getElementById("output");
+    output.innerHTML = "X=" + event.x + ",Y=" + event.y + ",Z=" + event.z + "<br>";
+});
+//diviceorientation事件 三维空间，靠x、y和z轴来定位的
+EventUtil1.addHandler(windwo, "deviceorientation", function (event) {
+    var output = document.getElementById("output");
+    output.innerHTML = "Alpha=" + event.alpha + ",Beta=" + event.beta + ",Gamma=" + event.gamma + "<br>";
+});
+//devicemotion事件 告诉开发人员设备什么时候移动，而不仅仅是设备方向的改变
+EventUtil1.addHandler(window, "devicemotion", function (event) {
+    var output = document.getElementById("output");
+    if (event.rotationRate !== null) {
+        output.innerHTML = "Alpha=" + event.rotationRate.alpha + ",Beta=" + event.rotationRate.beta +
+        ",Gamma=" + event.rotationRate.gamma + "<br>";
+    }
+});
+
+//触摸与手势事件
+//触摸事件
+function handleTouchEvent(event) {
+    //之跟踪一次触摸
+    if (event.touches.length == 1) {
+        var output = document.getElementById("output");
+        switch (event.type) {
+            case "touchstart":
+                output.innerHTML = "Touch started (" + event.touches[0].clientX +
+                "," + event.touches[0].clientY + ")";
+                break;
+            case "touchend":
+                output.innerHTML = "<br>Touch ended (" + event.changedTouches[0].clientX +
+                "," + event.changedTouches[0].clientY + ")";
+                break;
+            case "touchmove":
+                event.preventDefault();
+                output.innerHTML = "<br>Touch moved (" + event.changedTouches[0].clientX +
+                "," + event.changedTouches[0].clientY + ")";
+                break;
+        }
+    }
+}
+EventUtil1.addHandler(document, "touchstart", handleTouchEvent);
+EventUtil1.addHandler(document, "touchend", handleTouchEvent);
+EventUtil1.addHandler(document, "touchmove", handleTouchEvent);
+//手势事件
+function handleGestureEvent(event) {
+    var output = document.getElementById("output");
+    switch (event.type) {
+        case "gesturestart":
+            output.innerHTML = "Gesture started (rotation=" + event.rotation +
+            ",scale=" + event.scale + ")";
+            break;
+        case "gestureend":
+            output.innerHTML = "<br>Gesture ended (" + event.rotation +
+            ",scale=" + event.scale + ")";
+            break;
+        case "gesturechange":
+            output.innerHTML = "<br>Gesture ended (" + event.rotation +
+            ",scale=" + event.scale + ")";
+            break;
+    }
+}
+EventUtil1.addHandler("gesturestart", "touchstart", handleTouchEvent);
+EventUtil1.addHandler("gestureend", "touchend", handleTouchEvent);
+EventUtil1.addHandler("gesturechange", "touchmove", handleTouchEvent);
+
+//内存和性能
+//事件委托：事件处理程序过多
+var item1 = document.getElementById("goSomewhere");
+var item1 = document.getElementById("doSomewhere");
+var item1 = document.getElementById("sayHi");
+EventUtil1.addHandler(item1, "click", function (event) {
+    location.href = "http://www.wrox.com";
+});
+EventUtil1.addHandler(item1, "click", function (event) {
+    document.title = "I changed the document's title";
+});
+EventUtil1.addHandler(item1, "click", function (event) {
+    alert("hi");
+});
+//如果在一个复杂的web应用程序中，对所有可单机的元素都采用这种方式，那么结果就会有数不清的代码用于添加事件处理程序。
+//此时，可以利用事件委托技术解决这个问题。使用事件委托，只需要在DOM树中尽量最高的层次上添加一个时间处理程序。
+var list = document.getElementById("myLinks");
+EventUtil1.addHandler(list, "click", function (event) {
+    event = EventUtil1.getEvent(event);
+    var target = EventUtil1.getTarget(event);
+
+    switch (target.id) {
+        case "doSomething":
+            document.title = "I changed the document's title";
+            break;
+        case "goSomewhere":
+            location.href = "http://www.wrox.com";
+        case "sayHi":
+            alert("hi");
+            break;
+    }
+});
 
 
 
@@ -498,4 +631,19 @@ EventUtil1.addHandler(window, "load", function () {
 
 
 
-  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
