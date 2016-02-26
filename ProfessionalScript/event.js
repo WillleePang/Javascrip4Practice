@@ -187,6 +187,13 @@ var EventUtil1 = {
         } else {
             return -event.detail * 40;
         }
+    },
+    getCharCode: function (event) {
+        if (typeof event.charCode == "number") {
+            return event.charCode;
+        } else {
+            return event.keyCode;
+        }
     }
 }
 link.onclick = function (event) {
@@ -313,6 +320,93 @@ EventUtil1.addHandler(document, "mousewheel", function (event) {
     EventUtil1.addHandler(document, "DOMMouseScroll", handleMouseWheel);
 })();
 
+//键盘与文本事件
+var textbox = document.getElementById("myText");
+EventUtil1.addHandler(textbox, "keyup", function (event) {
+    event = EventUtil1.getEvent(event);
+    alert(EventUtil1.getCharCode(event));
+
+    var identifier = event.key || event.keyIdentifier;
+    if (identifier) {
+        alert(identifier);
+    }
+
+    var loc = event.location || event.keyLocation;
+    if (loc) {
+        alert(loc);
+    }
+
+    if (event.getModifierState) {
+        alert(event.getModeifierState("Shift"));
+    }
+});
+//textInput事件
+EventUtil1.addHandler(textbox, "textInput", function (event) {
+    event = EventUtil1.getEvent(event);
+    alert(event.data);
+    //把文本输入到文本框中的方式
+    alert(event.inputMethod);
+})
+//复合事件
+//用于处理IME的输入序列
+var textbox = document.getElementById("myText");
+EventUtil1.addHandler(textbox, "compositionstart", function (event) {
+    event = EventUtil1.getevent(event);
+    alert(event);
+});
+EventUtil1.addHandler(textbox, "compositionupdate", function (event) {
+    event = EventUtil1.getevent(event);
+    alert(event);
+});
+EventUtil1.addHandler(textbox, "compositionend", function (event) {
+    event = EventUtil1.getevent(event);
+    alert(event);
+});
+//变动事件
+var isUpported = document.implementation.hasFeature("MutationEvents", "2.0");
+//删除节点，removeChild() replaceChild() 从dom中删除节点时，触发这个时间
+EventUtil1.addHandler(windwo, "load", function (event) {
+    var list = document.getElementById("myList");
+
+    EventUtil1.addHandler(document, "DOMSubtreeModified", function (event) {
+        alert(event.type);
+        alert(event.target);
+    });
+    EventUtil1.addHandler(document, "DOMNodeRemoved", function (event) {
+        alert(event.type);
+        alert(event.target);
+        alert(event.relatedNode);
+    });
+    EventUtil1.addHandler(document, "DOMSubtreeModified", function (event) {
+        alert(event.type);
+        alert(event.target);
+    });
+    list.parentNode.removeChild(list);
+});
+//使用appendChild()、replaceChild()、insertBefore()向DOM中插入节点时，首先会出发DOMNodeInserted事件
+EventUtil1.addHandler(window, "load", function () {
+    var list = document.getElementById("myList");
+    var item = document.createElement("li");
+    item.appendChild(document.createTextNode("Item 4"));
+
+    EventUtil1.addHandler(document, "DOMSubtreeModified", function (event) {
+        alert(event.type);
+        alert(event.target);
+    });
+    EventUtil1.addHandler(document, "DOMNodeInserted", function (event) {
+        alert(event.type);
+        alert(event.target);
+        alert(event.relatedNode);
+    });
+    EventUtil1.addHandler(document, "DOMNodeInsertedIntDocument", function (event) {
+        alert(event.type);
+        alert(event.target);
+    });
+    list.parentNode.removeChild(list);
+})
+
+//HTML5事件
+//contextmenu事件
 
 
 
