@@ -407,6 +407,83 @@ EventUtil1.addHandler(window, "load", function () {
 
 //HTML5事件
 //contextmenu事件
+EventUtil1.addHandler(window, "load", function () {
+    var div = document.getElementById("myDiv");
+    EventUtil1.addHandler(div, "contextmenu", function (event) {
+        event = EventUtil1.getEvent(event);
+        //保证不现实浏览器默认的上下文菜单
+        EventUtil1.preventDefault(event);
+
+        var mmenu = document.getElementById("myMenu");
+        menu.style.left = event.clientX + "px";
+        menu.style.top = event.clientY + "px";
+        menu.style.visibility = "visible";
+    });
+    EventUtil1.addHandler(document, "click", function () {
+        document.getElementById("myMenu").style.visibility = "hidden";
+    });
+});
+//beforeunload事件
+EventUtil1.addHandler(window, "beforeload", function (event) {
+    event = EventUtil1, getEvent(event);
+    var mesage = "I'm really going to miss you if you go.";
+    event.returnValue = message;
+    return message;
+});
+//DOMContentLoaded事件
+//在形成完整的DOM树时候就会触发
+EventUtil1.addHandler(document, "DOMContentLoaded", function (event) {
+    alert("Content loaded");
+});
+//如果浏览器不支持DOMContentLoaded
+setTimeout(function () {
+    alert("excute");
+}, 0);
+//readystatechange事件
+//uninitialized
+//loading
+//loaded
+//interactive
+//complete
+EventUtil1.addHandler(document, "readystatechange", function () {
+    if (document.readyState == "interfactive" || document.readyState == "complete") {
+        EventUtil1.removeHandler(document, "readystatechange", arguments.callee);
+        alert("Content loaded");
+    }
+});
+//加载外部javascript文件的代码
+EventUtil1.addHandler(window, "load", function () {
+    var script = document.createElement("script");
+
+    EventUtil1.addHandler(script, "readstatechange", function (event) {
+        event = EventUtil1.getEvent(event);
+        var target = EventUtil1.getTarget(event);
+        if (target.readState == "loaded" || target.readyState == "complete") {
+            EventUtil1.removeHandler(target, "readystatechange", arguments.callee);
+            alert("script loaded");
+        }
+    });
+    script.src = "example.js";
+    document.body.appendChild(script);
+});
+//加载外部CSS文件的代码
+EventUtil1.addHandler(window, "load", function () {
+    var link = document.createElement("link");
+    link.type = "text/css";
+    link.rel = "stylesheet";
+
+    EventUtil1.addHandler(link, "readstatechange", function (event) {
+        event = EventUtil1.getEvent(event);
+        var target = EventUtil1.getTarget(event);
+        if (target.readState == "loaded" || target.readyState == "complete") {
+            EventUtil1.removeHandler(target, "readystatechange", arguments.callee);
+            alert("CSS Loaded");
+        }
+    });
+    link.href = "example.css";
+    document.getElementsByTagName("head")[0].appendChild(link);
+});
+
 
 
 
