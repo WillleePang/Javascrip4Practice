@@ -617,12 +617,80 @@ EventUtil1.addHandler(list, "click", function (event) {
     }
 });
 
+//移除事件处理程序
+//<input type = "button" value = "Click Me" id = "myBtn">
+var btn = document.getElementById("myBtn");
+btn.onclick = function () {
+    //先执行某些操作
+    btn.onclick = null;//移除事件处理程序
+    document.getElementById("myDiv").innerHTML = "Processing..."//麻烦了！
+};
 
+//模拟鼠标事件
+var btn = document.getElementById("myBtn");
+event = document.createEvent("MouseEvents");
+event.initMouseEvent("click", true, true, document.defaultView, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+btn.dispatchEvent(event);
+//模拟键盘事件
+var textbox = document.getElementById("myTextbox");
+if (document.implementation.hasFeature("KeyboardEvents", "3.0")) {
+    event = document.createEvent("KeyboadrEvent");
+    event.initKeyboardEvent("keydown", true, true, document.defaultView, "a", 0, "Shift", 0);
+}
+textbox.dispatchEvent(event);
+//适用于Firefox
+event = document.createEvent("KeyEvents");
+event.initKeyEvent("keypress", true, true, document.defaultView, false, false, false, false, 65, 65);
+textbox.dispatchEvent(event);
 
+event.initEvent(type, bubbles, cancelable);
+event.view = document.defaultView;
+event.altKey = false;
+event.ctrlKey = false;
+event.shiftKey = false;
+event.metaKey = false;
+event.keyCode = 65;
+event.charCode = 65;
+textbox.dispatchEvent(event);
 
+event = document.createEvent("MutationEvents");
+event.initMutationEvent("DOMNodeInserted", true, false, someNode, "", "", "", 0);
+target.dispatchEvent(event);
 
+var div = document.getElementById("myDiv"), event;
+EventUtil1.addHandler(div, "myevent", function (event) {
+    alert("DIV: " + event.detail);
+});
+EventUtil1.addHandler(document, "myevent", function (event) {
+    alert("DOCUMENT: " + event.detail);
+});
+if (document.implementation.hasFeature("CustomEvents", "3.0")) {
+    event = document.createEvent("CustomEvent");
+    event.initCustomEvent("myevent", true, false, "Hello world!");
+    div.dispatchEvent(event);
+}
 
+//IE中的事件模拟
+var btn = document.getElementById("myBtn");
+var event = document.createEventObject();
 
+event.screenX = 100;
+event.screenY = 0;
+event.clientX = 0;
+event.clientY = 0;
+event.ctrlKey = false;
+event.altKey = false;
+event.shiftKey = false;
+event.button = 0;
+btn.fireEvent("onclick", event);
+
+var textbox = document.getElementById("myTextbox");
+var event = document.createEventObject();
+event.altKey = false;
+event.ctrlKey = false;
+event.shiftKey = false;
+event.keyCode = 65;
+textbox.fireEvent("onkyepress",event);
 
 
 
