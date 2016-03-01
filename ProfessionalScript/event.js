@@ -690,13 +690,113 @@ event.altKey = false;
 event.ctrlKey = false;
 event.shiftKey = false;
 event.keyCode = 65;
-textbox.fireEvent("onkyepress",event);
+textbox.fireEvent("onkyepress", event);
 
+//表单脚本
+var form = document.getElementById("form1");
 
+var firstForm = document.forms[0];
+var myForm = document.forms["form2"];
 
+//通用提交按钮
+//<input type="submit" value="submit form">
+//自定义提交按钮
+//<button type="submit">submit form</button>
+//图像按钮
+//<input type="image" src="graphic.gif">
 
+EventUtil1.addHandler(form, "submit", function (event) {
+    //取得事件对象
+    event = EventUtil1.getEvent(event);
+    //阻止默认事件
+    EventUtil1.preventDefault(event);
+});
+//提交表单
+form.submit();
+//重置表单
+//通用提交按钮
+//<input type="reset" value="reset form">
+//自定义提交按钮
+//<button type="reset">reset form</button>
+EventUtil1.addHandler(form, "reset", function (event) {
+    event = EventUtil1.getevent(event);
+    EventUtil1.preventDefault(event);
+});
+form.reset();
 
+//表单字段
+//取得表单中的第一个字段
+var field1 = form.elements[0];
+//取得名为“textbox1”的字段
+var field2 = form.elements["textbox1"];
+//取得表单中包含的字段的数量
+var fieldCount = form.elements.length;
 
+var colorFields = form.elements["color"];
+alert(colorFields.length);//3
+var firstColorField = colorFields[0];
+var firstFormField = form.elements[0];
+alert(firstColorField === firstFormField);//true
+
+//共有的表单字段属性
+var field = form.elements[0];
+field.value = "Another value";
+alert(field.form == form);//true
+field.focus();
+field.disabled = true;
+field.type = "checkbox";
+
+//避免多次提交表单
+EventUtil1.addHandler(form, "submit", function (event) {
+    event = EventUtil1.getevent(event);
+    var target = EventUtil1.getTarget(event);
+    var btn = target.elements["submit-btn"];
+    btn.disabled = true;
+});
+
+//共有的表单字段方法
+EventUtil1.addHandler(window, "load", function () {
+    document.forms[0].elements[0].focus();
+    document.forms[0].elements[0].blur();
+});
+//<input type="text" autofocus>
+EventUtil1.addHandler(window, "load", function (event) {
+    var element = document.forms[0].elements[0];
+    if (element.autofocus !== true) {
+        element.focus();
+        console.log("JS focus");
+    }
+});
+//共有的表单字段事件
+var textbox = document.forms[0].elemtns[0];
+EventUtil1.addhandler(textbox, "focus", function (event) {
+    event = EventUtil1.getEvent(event);
+    var target = EventUtil1.getTarget(event);
+
+    if (target.style.backgroundcolor != "red") {
+        target.style.backgroundColor = "yellow";
+    }
+});
+EventUtil1.addhandler(textbox, "blur", function (event) {
+    event = EventUtil1.getEvent(event);
+    var target = EventUtil1.getTarget(event);
+
+    if (/[^\d]/.test(target.value)) {
+        target.style.backgroundColor = "red";
+    } else {
+        target.style.backgroundColor = "";
+    }
+});
+EventUtil1.addhandler(textbox, "change", function (event) {
+    event = EventUtil1.getEvent(event);
+    var target = EventUtil1.getTarget(event);
+
+    if (/[^\d]/.test(target.value)) {
+        target.style.backgroundColor = "red";
+    } else {
+        target.style.backgroundColor = "";
+    }
+});
 
 
 
