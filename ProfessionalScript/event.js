@@ -194,7 +194,20 @@ var EventUtil1 = {
         } else {
             return event.keyCode;
         }
-    }
+    },
+    getClipboardText: function (event) {
+        var clipboardData = (event.clipboardData || window.clipboardData);
+        return clipboardData.getData("text");
+    },
+    setClipboardText: function (event, value) {
+        if (event.clipboardData) {
+            return event.clipboardData.setData("text/plain", value);
+        } else if (window.clipboardData) {
+            return window.clipboardData.setData("text", value);
+        }
+    },
+
+
 }
 link.onclick = function (event) {
     event = EventUtil1.getEvent(event);
@@ -365,7 +378,7 @@ EventUtil1.addHandler(textbox, "compositionend", function (event) {
 //变动事件
 var isUpported = document.implementation.hasFeature("MutationEvents", "2.0");
 //删除节点，removeChild() replaceChild() 从dom中删除节点时，触发这个时间
-EventUtil1.addHandler(windwo, "load", function (event) {
+EventUtil1.addHandler(window, "load", function (event) {
     var list = document.getElementById("myList");
 
     EventUtil1.addHandler(document, "DOMSubtreeModified", function (event) {
@@ -798,9 +811,107 @@ EventUtil1.addhandler(textbox, "change", function (event) {
     }
 });
 
+//选择文本
+//在文本框获得焦点时选择所有文本，可以让用户不必一个一个地删除文本
+EventUtil1.addHandler(textbox, "foucs", function (event) {
+    event = EventUtil1.getEvent(event);
+    var target = EventUtil1.getTarget(event);
 
+    target.select();
+});
+//选择事件
+var textbox = document.forms[0].elements["textbox1"];
+EventUtil1.addhandler(textbox, "selected", function (event) {
+    alert("Text selected" + textbox.value);
+});
+//取得选择的文本
+function getSelectedText(textbox) {
+    return textbox.value.substring(textbox.selectionStart, textbox.selectionEnd);
+}
 
+function getSelectedText1(textbox) {
+    if (typeof textbox.selectionStart == "number") {
+        return text.value.substring(textbox.selectionStart, textbox.selectionEnd);
+    } else if (document.selection) {
+        return document.selection.createRange().text;
+    }
+}
 
+textbox.value = "Hello world!";
+var range = textbox.createTextRange();
+range.collapse(true);
+range.moveStart("character", 0);
+range.moveEnd("character", textbox.value.length);
+range.select();
+
+range.collapse(true);
+range.moveStart("character", 0);
+range.moveEnd("character", 3);
+range.select();
+
+range.collapse(true);
+range.moveStart("character", 4);
+range.moveEnd("character", 3);
+range.select();
+
+function selectText(textbox, startIndex, stopIndex) {
+    if (textbox.setSelectionRange) {
+        textbox.setSelectionRange(startIndex, stopIndex);
+    } else if (textbox.createTextRange) {
+        range.collapse(true);
+        range.moveStart("character", startIndex);
+        range.moveEnd("character", stopIndex - startIndex);
+        range.select();
+    }
+    textbox.focus();
+}
+
+//屏蔽字符
+EventUtil1.addHandler(textbox, "keypress", function (event) {
+    event = EventUtil1.getEvent(event);
+    var target = EventUtil1.getTarget(event);
+    var charCode = EventUtil1.getCharCode(event);
+    //如果不是数字的话，就阻止
+    if (!/\d/.test(String.fromCharCode(charCode)) && charCode > 9) {
+        EventUtil1.preventDefault();
+    }
+});
+
+//操作剪贴板
+EventUtil1.addHandler(textbox, "paste", function (event) {
+    event = EventUtil1.getevent(event);
+    var text = EventUtil1.getClipboardText(event);
+    if (!/^\d*$/.test(text)) {
+        EventUtil1.preventDefault(event);
+    }
+});
+
+(function () {
+    function tabForward(event) {
+        event = EventUtil1.getEvent(event);
+        var target = EventUtil1.getTarget(event);
+
+        if (target.value.length == target.maxLength) {
+            var form = target.form;
+            
+            for (var i = 0, len = form.elements.length; i < len; i++) {
+                if (form.elements[i] == target) {
+                    if (form.elements[i + 1]) {
+                        form.elements[i + 1].focus();
+                    }
+                    return
+                }
+            }
+        }
+    }
+    var textbox1 = document.getElementById("txtTel1");
+    var textbox2 = document.getElementById("txtTel2");
+    var textbox3 = document.getElementById("txtTel3");
+    
+    EventUtil1.addHandler(textbox1,"keyup",tabForward);
+    EventUtil1.addHandler(textbox2,"keyup",tabForward);
+    EventUtil1.addHandler(textbox3,"keyup",tabForward);
+})();
 
 
 
